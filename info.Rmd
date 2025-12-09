@@ -1,0 +1,152 @@
+---
+title: "The Hip Hub: Interactive Dashboard"
+author: "Erin Swaim"
+date: "December 08, 2025"
+output:
+  html_document:
+    toc: true
+    toc_depth: 2
+    theme: readable
+---
+
+# Overview
+
+The **Hip Hub** is an interactive R/Shiny dashboard that synthesizes hip anatomy visuals, common pathologies, assessment tools, prevention strategies, intervention options, and embedded documentation into one cohesive experience. The app is designed for learners aged **18–45**, balancing interactivity, clarity, and **guideline-backed** content.
+
+Core nonpharmacologic care for hip/knee osteoarthritis (OA)—**exercise**, **patient education**, and **weight management**—is emphasized throughout the Hub \(American College of Rheumatology/Arthritis Foundation \[ACR/AF\], 2019; Osteoarthritis Research Society International \[OARSI\], 2019\). Global radiographic hip OA prevalence is ~**8.55%** and increases with age; U.S. burden rose ~**24–25%** from 1990 to 2019 \(Fan et al., 2023; Sayyed et al., 2025\).
+
+> Sources:
+> - ACR/AF Guideline (2019): <https://rheumatology.org/osteoarthritis-guideline>
+> - OARSI Guideline (2019): <https://www.esceo.org/sites/esceo/files/pdf/Bannuru_O%26C_OARSIguidelines_2019.pdf>
+> - Fan et al., 2023: <https://link.springer.com/content/pdf/10.1186/s13075-023-03033-7.pdf>
+> - Sayyed et al., 2025: <https://bmjopen.bmj.com/content/15/10/e096130>
+
+# Design Goals
+
+1. **Tab-scoped interactivity**: Age/Sex filters live only in *Common Pathologies* and drive both a **Plotly** bar chart and a **matching age×sex image**.
+2. **Responsive visuals**: CSS constraints (`max-width:100%; height:auto;`) ensure graphs and images **never overlap**.
+3. **Uniform home images**: A consistent 2×2 grid establishes visual context and reduces jitter.
+4. **Embedded evidence**: Short, readable summaries appear beside content with **live citations**.
+5. **Reproducibility**: `info.Rmd` auto-renders to `info.html` on first run.
+
+# Installation & Dependencies
+
+```r
+# R >= 4.1 recommended
+install.packages(c("shiny", "bs4Dash", "plotly", "rmarkdown"))
+```
+
+# How to Run
+
+1. Place **all image assets** in the `www/` folder per the file structure below.
+2. Place the **six age×sex images** in `www/pathologies/`.
+3. Open R and run:
+
+```r
+shiny::runApp("app.R")
+```
+
+On first run, if `info.html` does not exist, the app will **render** `info.Rmd` to `info.html` and include it in the *Documentation* tab automatically.
+
+# Tabs & Features
+
+## Home
+Uniform **hip anatomy** images shown in a 2×2 grid at equal height. This establishes visual context and helps orient new users.
+
+## Common Pathologies
+Age and sex filters update a **prevalence bar chart** and a **matching age×sex pathology image**. Evidence highlights summarize sex-linked morphology patterns—**cam-type FAI more common in males; pincer-type more frequent in females; mixed type prevalent in both** \(Zhou et al., 2021; Owen et al., 2023\)—and global/U.S. OA burden \(Fan et al., 2023; Sayyed et al., 2025\).
+
+> Sources:
+> - Zhou et al., 2021: <https://academic.oup.com/jhps/article/8/3/233/6307732>
+> - Owen et al., 2023: <https://europepmc.org/article/PMC/PMC10403993>
+
+## Prevention & Maintenance
+Guideline-backed recommendations for **exercise**, **mobility**, and **self-management** are presented with inline citations (ACR/AF, 2019; OARSI, 2019). Emphasis includes **aerobic activity (≥150 min/week)**, **hip abduction strengthening**, **balance drills**, and **weight management** (≥5% loss associated with improved pain/function; AAFP synopsis).
+
+> Sources:
+> - ACR/AF Guideline (2019): <https://rheumatology.org/osteoarthritis-guideline>
+> - OARSI Guideline (2019): <https://www.esceo.org/sites/esceo/files/pdf/Bannuru_O%26C_OARSIguidelines_2019.pdf>
+> - AAFP synopsis (2021): <https://www.aafp.org/pubs/afp/issues/2021/0115/p120.html>
+
+## Intervention Options
+Conservative care follows **impairment-based phases** (load management → mobility → strength → return to sport), with short-term analgesic strategies as clinically appropriate (AAFP, 2021). Recovery expectations after hip arthroscopy reflect **early pain reduction**, **function plateau ~4 months**, and **activity plateau ~7 months** \(Lutz et al., 2025; Ramos et al., 2020; Grzybowski et al., 2015\).
+
+> Sources:
+> - Heerey et al., 2018: <https://www.jospt.org/doi/pdf/10.2519/jospt.2018.8002>
+> - AAFP 2021: <https://www.aafp.org/pubs/afp/issues/2021/0115/p120.html>
+> - Lutz et al., 2025: <https://academic.oup.com/jhps/article/12/Supplement_1/i125/8099723>
+> - Ramos et al., 2020: <https://journals.sagepub.com/doi/pdf/10.1177/2325967120960689>
+> - Grzybowski et al., 2015: <https://www.frontiersin.org/journals/surgery/articles/10.3389/fsurg.2015.00021/full>
+
+## Assessment
+Clinical tests include **FADIR** (sensitive, less specific), **Arlington** (higher sensitivity), and **Twist** (higher specificity), complemented by **FABER/Scour/Thomas**. Imaging workflow begins with **radiographs**, followed by **MR arthrography** for suspected labral pathology and **CT** for 3D planning \(Adib et al., 2023; Physiopedia, n.d.\).
+
+> Sources:
+> - Adib et al., 2023: <https://www.nirschl.com/pdf/two-novel-clinical-tests-for-diagnosis-of-hip-labral-tears.pdf>
+> - Physiopedia (FADIR overview): <https://www.physio-pedia.com/FADIR_%28Flexion,_Adduction,_Internal_Rotation%29_Test>
+
+## Documentation
+The *Documentation* tab embeds `info.html` (rendered from `info.Rmd`) and lists references for quick verification and further reading.
+
+# Data & Reactivity
+
+The app scaffolds a small **prevalence** data frame across **AgeGroup × Sex × Condition** using mock values for demonstration. This structure can be replaced by validated subgroup prevalence tables without altering reactive logic. The **Plotly** bar chart and **age×sex image** both respond to `input$path_age` and `input$path_sex`.
+
+# File Structure
+
+```text
+project/
+├── app.R
+├── info.Rmd
+├── www/
+│   ├── hip_anatomy.png
+│   ├── hip_anatomy2.png
+│   ├── hip_anatomy3.png
+│   ├── hip_anatomy_4.jpeg
+│   ├── rom_distribution.png
+│   ├── rehab_pain_score.png
+│   ├── hip_strength.png
+│   ├── fai_subtype_distribution.png
+│   └── pathologies/
+│       ├── Adolescent_Male_pathology.png
+│       ├── Adolescent_Female_pathology.png
+│       ├── Adult_Male_pathology.png
+│       ├── Adult_Female_pathology.png
+│       ├── Older_Adult_Male_pathology.png
+│       └── Older_Adult_Female_pathology.png
+```
+
+# Assets & Naming Conventions
+
+- Home page images (root `www/`):
+  - `hip_anatomy.png`, `hip_anatomy2.png`, `hip_anatomy3.png`, `hip_anatomy_4.jpeg` (uniform height)
+- Age×Sex pathology images (`www/pathologies/`):
+  - `Adolescent_Male_pathology.png`, `Adolescent_Female_pathology.png`,
+  - `Adult_Male_pathology.png`, `Adult_Female_pathology.png`,
+  - `Older_Adult_Male_pathology.png`, `Older_Adult_Female_pathology.png`
+
+# Customization
+
+- **Figure sizing**: Adjust the `height` argument where `img_if_exists()` is called; keep CSS constraints for responsiveness.
+- **Card widths**: Change `width` in `bs4Card()` (values sum to 12 across a row).
+- **Evidence blocks**: Edit the HTML bullet strings and URLs directly within each tab.
+
+# Reproducibility
+
+- Deterministic seed (`set.seed(5430)`) for mock data.
+- Auto-render of `info.Rmd` → `info.html` on first run via `rmarkdown::render()` in `app.R`.
+- Clear `www/` strategy for static assets.
+
+# References
+
+- American College of Rheumatology & Arthritis Foundation. (2019). *2019 Guideline for the Management of Osteoarthritis of the Hand, Hip, and Knee*. <https://rheumatology.org/osteoarthritis-guideline>
+- Bannuru, R. R., et al. (2019). *OARSI Guideline for Non-Surgical Management of Knee, Hip, and Polyarticular OA*. <https://www.esceo.org/sites/esceo/files/pdf/Bannuru_O%26C_OARSIguidelines_2019.pdf>
+- Fan, Z., et al. (2023). *The prevalence of hip osteoarthritis: A systematic review and meta-analysis*. <https://link.springer.com/content/pdf/10.1186/s13075-023-03033-7.pdf>
+- Sayyed, A., et al. (2025). *Temporal trends in the epidemiology of hip OA in the USA, 1990–2019*. <https://bmjopen.bmj.com/content/15/10/e096130>
+- Heerey, J., et al. (2018). *Impairment-based rehabilitation following hip arthroscopy*. <https://www.jospt.org/doi/pdf/10.2519/jospt.2018.8002>
+- Grzybowski, J. S., et al. (2015). *Rehabilitation following hip arthroscopy – Systematic review*. <https://www.frontiersin.org/journals/surgery/articles/10.3389/fsurg.2015.00021/full>
+- Ramos, L., et al. (2020). *Early postoperative period after hip arthroscopy*. <https://journals.sagepub.com/doi/pdf/10.1177/2325967120960689>
+- Lutz, A., et al. (2025). *Recovery trajectory after hip arthroscopy*. <https://academic.oup.com/jhps/article/12/Supplement_1/i125/8099723>
+- Zhou, J., et al. (2021). *Sex differences in radiographic FAI*. <https://academic.oup.com/jhps/article/8/3/233/6307732>
+- Owen, M. M., et al. (2023). *Sex-based differences in FAIS arthroscopy outcomes*. <https://europepmc.org/article/PMC/PMC10403993>
+- Physiopedia (n.d.). *FADIR Test*. <https://www.physio-pedia.com/FADIR_%28Flexion,_Adduction,_Internal_Rotation%29_Test>
